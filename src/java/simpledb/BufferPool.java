@@ -31,7 +31,7 @@ public class BufferPool {
     //private final HashMap<PageId,Page> buffferPool;//=new HashMap<PageId,Page>();
     private int numPages;
     private LRUCache<PageId, Page> lRUBufferPool;
-    //private LockManager lockManager;
+
 
 
     /**
@@ -43,7 +43,7 @@ public class BufferPool {
         // some code goes here
         this.numPages = numPages;
         this.lRUBufferPool = new LRUCache<>(numPages);
-        //this.lockManager = new LockManager();
+        
     }
     
     public static int getPageSize() {
@@ -77,16 +77,7 @@ public class BufferPool {
      */
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
-//        boolean lockAcquired = false;
-//        long start = System.currentTimeMillis();
-//        long timeout = new Random().nextInt(2000);
-//        while (!lockAcquired) {
-//            long now = System.currentTimeMillis();
-//            if (now - start > timeout) {
-//                throw new TransactionAbortedException();
-//            }
-//            lockAcquired = lockManager.acquireLock(tid, pid, perm);
-//        }
+
 
         if (lRUBufferPool.get(pid) == null) {
 
@@ -168,9 +159,9 @@ public class BufferPool {
         // some code goes here
         // not necessary for lab1
         DbFile dbfile = Database.getCatalog().getDatabaseFile(tableId);
-        //System.out.println(tid.getId());
+
         List<Page> pages = dbfile.insertTuple(tid, t);
-        //System.out.println(tid.getId());
+
         for (Page page : pages) {
             page.markDirty(true, tid);
             lRUBufferPool.put(page.getId(), page);
@@ -223,7 +214,7 @@ public class BufferPool {
                     Database.getLogFile().logWrite(value.isDirty(), value.getBeforeImage(), value);
                     Database.getLogFile().force();
 
-                    // value.markDirty(false, null);
+
                     dbfile.writePage(value);
 
                 } catch (IOException e) {
