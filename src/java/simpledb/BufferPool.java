@@ -2,7 +2,6 @@ package simpledb;
 
 import java.io.*;
 
-import java.util.Random;
 import java.util.*;
 
 /**
@@ -43,7 +42,7 @@ public class BufferPool {
         // some code goes here
         this.numPages = numPages;
         this.lRUBufferPool = new LRUCache<>(numPages);
-        
+
     }
     
     public static int getPageSize() {
@@ -203,8 +202,8 @@ public class BufferPool {
         // some code goes here
         // not necessary for lab1
 
-        LRUCache<PageId, Page>.DLinkedNode head = lRUBufferPool.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = lRUBufferPool.getTail();
+        LRUCache<PageId, Page>.pageNode head = lRUBufferPool.getHead();
+        LRUCache<PageId, Page>.pageNode tail = lRUBufferPool.getTail();
         while (head != tail) {
             Page value = head.value;
             if (value != null && value.isDirty() != null) {
@@ -238,8 +237,8 @@ public class BufferPool {
     public synchronized void discardPage(PageId pid) {
         // some code goes here
         // not necessary for lab1
-        LRUCache<PageId, Page>.DLinkedNode head = lRUBufferPool.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = lRUBufferPool.getTail();
+        LRUCache<PageId, Page>.pageNode head = lRUBufferPool.getHead();
+        LRUCache<PageId, Page>.pageNode tail = lRUBufferPool.getTail();
         while (head != tail) {
             PageId key = head.key;
             if (key != null && key.equals(pid)) {
@@ -279,8 +278,8 @@ public class BufferPool {
         // not necessary for lab1|lab2
     }
     private void checkIfDirty() throws DbException {
-        LRUCache<PageId, Page>.DLinkedNode head = lRUBufferPool.getHead();
-        LRUCache<PageId, Page>.DLinkedNode tail = lRUBufferPool.getTail();
+        LRUCache<PageId, Page>.pageNode head = lRUBufferPool.getHead();
+        LRUCache<PageId, Page>.pageNode tail = lRUBufferPool.getTail();
         tail = tail.prev;
         while (head != tail) {
             Page value = tail.value;

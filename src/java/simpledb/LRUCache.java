@@ -2,30 +2,29 @@ package simpledb;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class LRUCache<K,V> {
-    class DLinkedNode {
+    class pageNode {
         K key;
         V value;
-        DLinkedNode prev;
-        DLinkedNode next;
-        public DLinkedNode() {}
-        public DLinkedNode(K _key, V _value) {key = _key; value = _value;}
+        pageNode prev;
+        pageNode next;
+        public pageNode() {}
+        public pageNode(K Key, V Value) {key = Key; value = Value;}
 
     }
 
-    private Map<K, DLinkedNode> cache = new ConcurrentHashMap<K, DLinkedNode>();
+    private Map<K, pageNode> cache = new ConcurrentHashMap<K, pageNode>();
     private int size;
     private int capacity;
-    private DLinkedNode head, tail;
+    private pageNode head, tail;
 
     public LRUCache(int capacity) {
         this.size = 0;
         this.capacity = capacity;
 
-        head = new DLinkedNode();
-        tail = new DLinkedNode();
+        head = new pageNode();
+        tail = new pageNode();
         head.next = tail;
         head.prev = tail;
         tail.prev = head;
@@ -37,20 +36,20 @@ public class LRUCache<K,V> {
         return size;
     }
 
-    public DLinkedNode getHead() {
+    public pageNode getHead() {
         return head;
     }
 
-    public DLinkedNode getTail() {
+    public pageNode getTail() {
         return tail;
     }
 
-    public Map<K, DLinkedNode> getCache() {
+    public Map<K, pageNode> getCache() {
         return cache;
     }
 
     public synchronized V get(K key) {
-        DLinkedNode node = cache.get(key);
+        pageNode node = cache.get(key);
         if (node == null) {
             return null;
         }
@@ -58,7 +57,7 @@ public class LRUCache<K,V> {
         moveToHead(node);
         return node.value;
     }
-    public synchronized void remove(DLinkedNode node){
+    public synchronized void remove(pageNode node){
         node.prev.next = node.next;
         node.next.prev = node.prev;
         cache.remove(node.key);
@@ -67,17 +66,17 @@ public class LRUCache<K,V> {
 
     public synchronized void discard(){
 
-        DLinkedNode tail = removeTail();
+        pageNode tail = removeTail();
 
         cache.remove(tail.key);
         size--;
 
     }
     public synchronized void put(K key, V value) {
-        DLinkedNode node = cache.get(key);
+        pageNode node = cache.get(key);
         if (node == null) {
 
-            DLinkedNode newNode = new DLinkedNode(key, value);
+            pageNode newNode = new pageNode(key, value);
 
             cache.put(key, newNode);
 
@@ -91,26 +90,26 @@ public class LRUCache<K,V> {
         }
     }
 
-    private void addToHead(DLinkedNode node) {
+    private void addToHead(pageNode node) {
         node.prev = head;
         node.next = head.next;
         head.next.prev = node;
         head.next = node;
     }
 
-    private void removeNode(DLinkedNode node) {
+    private void removeNode(pageNode node) {
         node.prev.next = node.next;
         node.next.prev = node.prev;
     }
 
 
-    private void moveToHead(DLinkedNode node) {
+    private void moveToHead(pageNode node) {
         removeNode(node);
         addToHead(node);
     }
 
-    private DLinkedNode removeTail() {
-        DLinkedNode res = tail.prev;
+    private pageNode removeTail() {
+        pageNode res = tail.prev;
         removeNode(res);
         return res;
     }
