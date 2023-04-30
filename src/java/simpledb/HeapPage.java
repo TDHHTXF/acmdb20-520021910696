@@ -248,6 +248,22 @@ public class HeapPage implements Page {
     public void deleteTuple(Tuple t) throws DbException {
         // some code goes here
         // not necessary for lab1
+	    for (int i = 0; i < getNumTuples(); i++) {
+            if (tuples[i] == null) {
+                continue;
+            }
+
+            if (tuples[i].equals(t)) {
+
+                if (!isSlotUsed(i)) {
+                    throw new DbException("hhh");
+                }
+                tuples[i] = null;
+                markSlotUsed(i, false);
+                return;
+            }
+        }
+        throw new DbException("hhh");
     }
 
     /**
@@ -260,6 +276,20 @@ public class HeapPage implements Page {
     public void insertTuple(Tuple t) throws DbException {
         // some code goes here
         // not necessary for lab1
+	    if (getNumEmptySlots() == 0) {
+            throw new DbException("hhh");
+        }
+        for (int i = 0; i < getNumTuples(); i++) {
+            if (tuples[i] != null && !t.getTupleDesc().equals(tuples[i].getTupleDesc())) {
+                throw new DbException("hhh");
+            }
+            if (!isSlotUsed(i)) {
+                tuples[i] = t;
+                tuples[i].setRecordId(new RecordId(getId(), i));
+                markSlotUsed(i, true);
+                return;
+            }
+        }
     }
 
     /**
